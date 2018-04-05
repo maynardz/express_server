@@ -66,4 +66,23 @@ router.post('/seven', (req, res) => {
     );
 });
 
+router.get('/helloclient', (req, res) => {
+    res.send('This is a message from the server to the client.');
+});
+
+router.get('/one', function(req, res) {
+
+    TestModel.findAll({attributes: ['id', 'testdata']})
+
+    .then(
+        function findAllSuccess(data) {
+            console.log("Controller data:", data);
+            res.json(data);
+        },
+        function findAllErrors(err) {
+            res.send(500, err.message);
+        }
+    );
+});
+
 module.exports = router;

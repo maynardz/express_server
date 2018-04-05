@@ -33,18 +33,27 @@ router.post('/createuser', (req, res) => {
 
 router.post('/signin', (req, res) => {
     
-    User.findOne({ where: { username: req.body.user.username } }).then(
+    User.findOne({where: {username: req.body.user.username} }).then(
 
         function(user) {
 
             if (user) {
 
                 bcrypt.compare(req.body.user.password, user.passwordhash, function (err, matches) {
-                    console.log("The value matches:", matches);
+                    
+                    if (matches) {
+
+                        var token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: 60*60*24});
+                        res.json({
+                            user: user,
+                            message: "succesfully authenticated",
+                            sessionToken: token
+                        });
+                    } else {
+                        res.status(502).send({error: "failure"});
+                    }
                 });
-
             } else {
-
                 res.status(500).send({ error: "failed to authenticate"});
             }
         },
